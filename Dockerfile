@@ -1,10 +1,13 @@
 # Build: sudo docker build . -t dev-env --build-arg DOCKER_USERID=$(id -u) --build-arg DOCKER_GROUPID=$(id -g) --build-arg DOCKER_RENDERID=$(getent group render | cut -d: -f3)
-FROM ubuntu:22.04
+FROM antiagainst/triton-hip:ubuntu22.04-python3.10-hip6.1.2
 
 SHELL ["/bin/bash", "-e", "-u", "-o", "pipefail", "-c"]
 
 # Disable apt-key parse waring
 ARG APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=1
+
+RUN curl https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+RUN echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null
 
 # Basic development environment
 RUN apt-get update && apt-get install -y \
@@ -30,6 +33,10 @@ RUN DEBIAN_FRONTEND=noninteractive TZ=America/Los_Angeles apt-get install -y \
 RUN apt-get install -y \
   libcapstone-dev libtbb-dev libzstd-dev \
   libglfw3-dev libfreetype6-dev libgtk-3-dev
+
+# HIP runtime
+#RUN apt-get install -y rocm-hip-runtime
+RUN apt-get install -y hip-runtime-amd
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
