@@ -1,5 +1,5 @@
 # Build: sudo docker build . -t dev-env --build-arg DOCKER_USERID=$(id -u) --build-arg DOCKER_GROUPID=$(id -g) --build-arg DOCKER_RENDERID=$(getent group render | cut -d: -f3)
-FROM antiagainst/triton-hip:ubuntu22.04-python3.10-hip6.1.2
+FROM antiagainst/triton-hip:ubuntu22.04-python3.10-rocm6.2
 
 SHELL ["/bin/bash", "-e", "-u", "-o", "pipefail", "-c"]
 
@@ -36,7 +36,8 @@ RUN apt-get install -y \
 
 # HIP runtime
 #RUN apt-get install -y rocm-hip-runtime
-RUN apt-get install -y hip-runtime-amd
+#RUN apt-get install -y hip-runtime-amd
+#RUN apt-get install -y rocm
 
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
